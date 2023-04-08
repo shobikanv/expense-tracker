@@ -1,99 +1,113 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Col, Row, Container, Form, Button, Table } from "react-bootstrap";
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Container, Row, Col, Spinner, Button, Badge } from "react-bootstrap";
+import { FaArrowLeft, FaArrowRight,FaPen } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import FilterTrans from './FilterTrans';
+import "./RecentTrans.css";
 
 export default function RecentTrans() {
   const [transactions, setTransactions] = useState([]);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [transactionType, setTransactionType] = useState('');
-  const [selectedTags, setSelectedTags] = useState([]);
-
-  const handleFilterChange = (filterParams) => {
-    setStartDate(filterParams.startDate);
-    setEndDate(filterParams.endDate);
-    setTransactionType(filterParams.transactionType);
-    setSelectedTags(filterParams.selectedTags);
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:3003/expenses')
-      .then(response => {
-        const expenses = response.data.map(expense => ({ ...expense, type: 'expense' }));
-        axios.get('http://localhost:3003/income')
-          .then(response => {
-            const income = response.data.map(income => ({ ...income, type: 'income' }));
+    axios
+      .get("http://localhost:3003/expenses")
+      .then((response) => {
+        const expenses = response.data.map((expense) => ({
+          ...expense,
+          type: "expense",
+        }));
+        axios
+          .get("http://localhost:3003/income")
+          .then((response) => {
+            const income = response.data.map((income) => ({
+              ...income,
+              type: "income",
+            }));
             const allTransactions = [...expenses, ...income];
 
-            let filteredTransactions = allTransactions.filter(transaction => {
-              if (startDate && new Date(transaction.date) < new Date(startDate)) {
-                return false;
-              }
-              if (endDate && new Date(transaction.date) > new Date(endDate)) {
-                return false;
-              }
-              if (transactionType && transaction.type !== transactionType) {
-                return false;
-              }
-              if (selectedTags.length > 0 && !selectedTags.includes(transaction.tag)) {
-                return false;
-              }
-              return true;
-            });
-
-            const sortedTransactions = filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedTransactions = allTransactions.sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
             const recentTransactions = sortedTransactions.slice(0, 30);
             setTransactions(recentTransactions);
-            console.log(allTransactions)
+            console.log(recentTransactions);
+            setLoading(false);
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
-  }, [startDate, endDate, transactionType, selectedTags]);
-  const getRowStyle = (type) => {
-    return type === 'expense' ? { backgroundColor: '#ffe6e6' } : { backgroundColor: '#e6ffe6' };
+  }, []);
+
+  const formatDate = (date) => {
+    const options = { day: "numeric", month: "short" };
+    return new Date(date).toLocaleDateString("en-US", options);
   };
 
   return (
-    <>
-
-      <Container>
-        <h2>Recent Transactions</h2>
-        <br></br>
-        <FilterTrans onFilterChange={handleFilterChange} />
-        <br></br>
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Tag</th>
-              <th>Note</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction, index) => (
-              <tr key={transaction.id} style={getRowStyle(transaction.type)}>
-                <td>{index + 1}</td>
-                <td>{transaction.date}</td>
-                <td>{transaction.type}</td>
-                <td>{transaction.tag}</td>
-                <td>{transaction.note}</td>
-                <td>{transaction.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
-    </>
+    <Container fluid className="recent-trans-container">
+      <div className="transactions-list__wrapper">
+        {loading ? (
+          <div className="dimmer">
+            <Spinner animation="border" />
+          </div>
+        ) : (
+          transactions.map((transaction, index) => (
+            <div className="transaction-item" key={index}>
+              <div className="transaction-item__date">
+                {formatDate(transaction.date)}
+              </div>
+              <div className="transaction-item__info-wrapper">
+                <div className="transaction-item__info">
+                  {transaction.type === "income" ? (
+                    <FaArrowLeft color="grey" />
+                  ) : (
+                    <FaArrowRight color="grey" />
+                  )}
+                  {transaction.tag &&
+                    Array.isArray(transaction.tag) &&
+                    transaction.tag.map((tag, index) => (
+                      <Badge className="custom-badge" key={index}>
+                        {tag}
+                      </Badge>
+                    ))}
+                  {transaction.note && (
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        color: "#929293",
+                        paddingLeft: "0.5em",
+                      }}
+                    >
+                      {transaction.note}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="transaction-item__amount">
+                <span
+                  className={
+                    transaction.type === "income"
+                      ? "mono positive"
+                      : "mono negative"
+                  }
+                >
+                  {transaction.amount} {transaction.currency}
+                </span>
+              </div>
+              <div className="transaction-item__edit">
+                <Button variant="link">
+                  <FaPen color="grey"/>
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </Container>
   );
 }

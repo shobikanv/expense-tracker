@@ -1,132 +1,166 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Row, Container, Card, Form, Button } from "react-bootstrap";
 import axios from "axios";
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 
 export default function ExpenseForm() {
-    const [tag, setTag] = useState("");
-    const [note, setNote] = useState("");
-    const [amount, setAmount] = useState("");
-    const [date, setDate] = useState("");
-    const [ferrors, setFerrors] = useState({})
+  const [tag, setTag] = useState("");
+  const [note, setNote] = useState("");
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [ferrors, setFerrors] = useState({});
+  const [tagOptions, setTagOptions] = useState([]);
 
-  const errors = {}
-    const taghandler = (event) => {
-        setTag(event.target.value);
-    };
-    const notehandler = (event) => {
-        setNote(event.target.value);
+  useEffect(() => {
+    axios
+      .get("http://localhost:3003/expenses")
+      .then((response) => {
+        const tags = response.data.map((expense) => expense.tag);
+        const uniqueTags = [...new Set(tags)];
+        const options = uniqueTags.map((tag) => ({
+          value: tag,
+          label: tag,
+        }));
+        setTagOptions(options);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const navigate = useNavigate();
+  const errors = {};
+  const tagHandler = (selectedOptions) => {
+    const values = selectedOptions ? selectedOptions.map((option) => option.value) : [];
+    setTag(values);
+  };
+  const notehandler = (event) => {
+    setNote(event.target.value);
+  };
+  const amounthandler = (event) => {
+    setAmount(event.target.value);
+  };
+  const datehandler = (event) => {
+    setDate(event.target.value);
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    let errors = {};
+    if (!tag) {
+      errors.tag = "Please add tag";
     }
-    const amounthandler = (event) => {
-        setAmount(event.target.value);
+    if (!amount) {
+      errors.amount = "Please enter amount";
     }
-    const datehandler = (event) => {
-        setDate(event.target.value);
+    if (!date) {
+      errors.date = "Please select a date";
     }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        let errors = {};
-        if (!tag) {
-          errors.tag = "Please add tag";
-        }
-        if (!amount) {
-          errors.amount = "Please enter amount";
-        } 
-        if (!date) {
-          errors.date = "Please select a date";
-        }
-        if (Object.keys(errors).length === 0) {
-          alert("Form submitted");
-          const expenseData = {
-            tag: tag,
-            note: note,
-            amount: amount,
-            date: date
-          };
-          axios.post("http://localhost:3003/expenses", expenseData)
-            .then(response => {
-              alert(response.data)
-              console.log(response.data);
-              setTag("");
-              setNote("");
-              setAmount("");
-              setDate("");
-            })
-            .catch(error => {
-              console.log(error);
-            });
-        } else {
-          setFerrors(errors);
-        }
+    if (Object.keys(errors).length === 0) {
+      alert("Form submitted");
+      const expenseData = {
+        tag: tag,
+        note: note,
+        amount: amount,
+        date: date,
       };
-      
-    
-    return (
-        <Container>
-            <Row>
-                <Col>
-                    <Card className="shadow px-4">
-                        <Card.Body>
-                            <div className="mb-3 mt-md-4">
-                                <div className="mb-3"></div>
-                                <Form className="row g-3" onSubmit={handleSubmit}>
-                                    <Row>
-                                        <h3> Expenses</h3>
-                                        <Form.Group as={Col}>
-                                            <FloatingLabel label="Tags">
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Enter tags..."
-                                                    list="tagOptions"
-                                                    onChange={taghandler}
-                                                    isInvalid={ferrors.tag}
-                                                />
-                                                <Form.Control.Feedback type='invalid'>{ferrors.tag}</Form.Control.Feedback>
-                                                <datalist id="tagOptions">
-                                                    <option value="Travel" />
-                                                    <option value="Rent payment" />
-                                                    <option value="Recharge" />
-                                                    <option value="Loan" />
-                                                    <option value="Other" />
-                                                </datalist>
-                                            </FloatingLabel>
-                                        </Form.Group>
-                                        <Form.Group as={Col} className="mb-3" controlId="formBasicPassword" onChange={amounthandler}>
-                                            <FloatingLabel label="Amount">
-                                                <Form.Control type="number" placeholder="Enter the amount" isInvalid={ferrors.amount} />
-                                                <Form.Control.Feedback type='invalid'>{ferrors.amount}</Form.Control.Feedback>
-                                            </FloatingLabel>
-                                        </Form.Group>
-                                    </Row>
+      axios
+        .post("http://localhost:3003/expenses", expenseData)
+        .then((response) => {
+          alert(response.data);
+          console.log(response.data);
+          setTag("");
+          setNote("");
+          setAmount("");
+          setDate("");
+        })
+        
+        .catch((error) => {
+          console.log(error);
+        })
+        navigate("/");
+    } else {
+      setFerrors(errors);
+    }
+  };
 
-                                    <Form.Group className="mb-1" controlId="formBasicEmail" onChange={notehandler}>
-                                        <FloatingLabel label="Note">
-                                            <Form.Control as="textarea" rows={3} />
-                                        </FloatingLabel>
-                                    </Form.Group>
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <Card className="shadow px-4">
+            <Card.Body>
+              <div className="mb-3 mt-md-4">
+                <div className="mb-3"></div>
+                <Form className="row g-3" onSubmit={handleSubmit}>
+                  <Row>
+                    <h6> Expenses</h6>
+                    <Form.Group as={Col}>
+                    <Form.Label>Tags</Form.Label>
+                        <Select
+                          isMulti={true}
+                          options={tagOptions}
+                          onChange={tagHandler}
+                          value={tagOptions.filter((option) => tag.includes(option.value))}
+                          />
+                        <Form.Control.Feedback type="invalid">
+                          {ferrors.tag}
+                        </Form.Control.Feedback>
+                      
+                    </Form.Group>
+                    <Form.Group
+                      as={Col}
+                      className="mb-3"
+                      controlId="formBasicPassword"
+                      onChange={amounthandler}
+                    >
+                      <Form.Label>Amount</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Enter the amount"
+                          isInvalid={ferrors.amount}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {ferrors.amount}
+                        </Form.Control.Feedback>
+                      
+                    </Form.Group>
+                  </Row>
 
-                                    <Row className="d-flex justify-content-end align-items-end">
-                                        <Form.Group as={Col} controlId="formDate" >
-                                            <Form.Label>Date</Form.Label>
-                                            <Form.Control type="date" onChange={datehandler} isInvalid={ferrors.date}/>
-                                            <Form.Control.Feedback type='invalid'>{ferrors.date}</Form.Control.Feedback>
-                                        
-                                        </Form.Group>
+                  <Form.Group
+                    className="mb-1"
+                    controlId="formBasicEmail"
+                    onChange={notehandler}
+                  >
+                    <FloatingLabel label="Note">
+                      <Form.Control as="textarea" rows={3} />
+                    </FloatingLabel>
+                  </Form.Group>
 
-                                        <Form.Group as={Col}>
-                                            <Button type="submit" >
-                                                Add Expense
-                                            </Button>
-                                        </Form.Group>
-                                    </Row>
+                  <Row className="d-flex justify-content-end align-items-end">
+                    <Form.Group as={Col} controlId="formDate">
+                      <Form.Label>Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        onChange={datehandler}
+                        isInvalid={ferrors.date}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {ferrors.date}
+                      </Form.Control.Feedback>
+                    </Form.Group>
 
-                                </Form>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container >
-    );
+                    <Form.Group as={Col}>
+                      <Button type="submit">Add Expense</Button>
+                    </Form.Group>
+                  </Row>
+                </Form>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
