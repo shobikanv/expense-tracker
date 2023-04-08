@@ -38,6 +38,18 @@
 }
 
 .hoverable:hover {
-    background-color: rgb(112, 88, 253) !important;
+    background-color: rgb(225, 223, 236) !important;
     
+}
+.my-custom-text {
+  font-weight: 300;
+  font-size: 1.71428571rem;
+  color: white !important; 
+}
+
+.navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .show>.nav-link {
+  color: rgba(16, 88, 241, 0.9);
+}
+.nav-link {
+  border-bottom: 1px solid #ccc;
 }

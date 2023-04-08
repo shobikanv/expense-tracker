@@ -95,7 +95,7 @@ export default function ExpenseForm() {
                 <div className="mb-3"></div>
                 <Form className="row g-3" onSubmit={handleSubmit}>
                   <Row>
-                    <h3> Expenses</h3>
+                    <h6> Expenses</h6>
                     <Form.Group as={Col}>
                     <Form.Label>Tags</Form.Label>
                         <Select

@@ -1,116 +1,109 @@
 import React, { useState } from 'react'
-import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
-
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 
 export default function Registration() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [password, setPassword] = useState("")
-  const [ferrors, setFerrors] = useState({})
-
-  const errors = {}
-
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState({})
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const validationErrors = {}
+
     if (!name) {
-      errors.name = "Please enter your name"
+      validationErrors.name = 'Please enter your name'
     }
     if (!email) {
-      errors.email = "Please enter you email"
-    } else if (!/\S+@\S+\.\S+/.test(email)) { errors.email = "Please enter a valid email" }
+      validationErrors.email = 'Please enter your email'
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      validationErrors.email = 'Please enter a valid email'
+    }
     if (!password) {
-      errors.password = "Please enter password"
-    } else if (password.length < 8) { errors.password = "Password should be atleast 8 characters long" }
+      validationErrors.password = 'Please enter password'
+    } else if (password.length < 8) {
+      validationErrors.password = 'Password should be at least 8 characters long'
+    }
     if (!confirmPassword) {
-      errors.confirmPassword = "Please confirm password"
-    } else if (confirmPassword !== password) { errors.confirmPassword = "Passwords do not match" }
+      validationErrors.confirmPassword = 'Please confirm password'
+    } else if (confirmPassword !== password) {
+      validationErrors.confirmPassword = 'Passwords do not match'
+    }
 
-    setFerrors(errors)
-    if (Object.keys(errors).length === 0) {
-      alert("Form submitted")
+    setErrors(validationErrors)
+
+    if (Object.keys(validationErrors).length === 0) {
+      alert('Form submitted')
     }
   }
 
   return (
     <div>
-      <Container>
-        <Row className="vh-100 d-flex justify-content-center align-items-center">
-          <Col md={8} lg={6} xs={12}>
-            <div className="border border-2 border-primary"></div>
-            <Card className="shadow px-4">
-              <Card.Body>
-                <div className="mb-3 mt-md-4">
-                  <h2 >Expense Tracker</h2>
-                  <div className="mb-3">
-                    <Form onSubmit={handleSubmit}>
-                      <Form.Group className="mb-3" controlId="Name">
-                        <Form.Label className="text-center">Name</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder='Enter your Name'
-                          value={name}
-                          onChange={(e) => { setName(e.target.value) }}
-                          isInvalid={ferrors.name}
-                        />
-                        <Form.Control.Feedback type='invalid'>{ferrors.name}</Form.Control.Feedback>
-                      </Form.Group>
-                      <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className="text-center">Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          placeholder='name@expense.com'
-                          value={email}
-                          onChange={(e) => { setEmail(e.target.value) }}
-                          isInvalid={ferrors.email}
-                        />
-                        <Form.Control.Feedback type='invalid'>{ferrors.email}</Form.Control.Feedback>
-                      </Form.Group >
-                      <Form.Group className="mb-3"
-                        controlId="formBasicPassword">
-                        <Form.Label className="text-center">Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          placeholder='Password'
-                          value={password}
-                          onChange={(e) => { setPassword(e.target.value) }}
-                          isInvalid={ferrors.password}
-                        />
-                        <Form.Control.Feedback type='invalid'>{ferrors.password}</Form.Control.Feedback>
-                      </Form.Group>
-                      <Form.Group className="mb-3"
-                        controlId="formBasicPassword">
-                        <Form.Label className="text-center">Confirm Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          placeholder='Retype password'
-                          value={confirmPassword}
-                          onChange={(e) => { setConfirmPassword(e.target.value) }}
-                          isInvalid={ferrors.confirmPassword}
-                        />
-                        <Form.Control.Feedback type='invalid'>{ferrors.confirmPassword}</Form.Control.Feedback>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label></Form.Label>
-                      </Form.Group>
-                      <div className="d-grid"></div>
-                      <Button type="submit">Create Account</Button>
-                    </Form>
-                    <br></br>
-                    <div className="mt-3">
-                      <p className="mb-0 text-center">Already have an account??{" "}<Link to="/signin">Sign In</Link></p>
-                    </div>
-                  </div>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+      <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
+        <Grid.Column style={{ maxWidth: 450 }}>
+          <Header as="h2" color="teal" textAlign="center">
+            Expense Tracker
+          </Header>
+          <Form size="large" onSubmit={handleSubmit}>
+            <Segment stacked>
+              <Form.Input
+                fluid
+                icon="user"
+                iconPosition="left"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={errors.name}
+              />
+              {errors.name && <span className="error-message">{errors.name}</span>}
+              <Form.Input
+                fluid
+                icon="mail"
+                iconPosition="left"
+                placeholder="E-mail address"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
+              />
+              {errors.email && <span className="error-message">{errors.email}</span>}
+              <Form.Input
+                fluid
+                icon="lock"
+                iconPosition="left"
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+              />
+              {errors.password && <span className="error-message">{errors.password}</span>}
+              <Form.Input
+                fluid
+                icon="lock"
+                iconPosition="left"
+                placeholder="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={errors.confirmPassword}
+              />
+              {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+              <Button color="teal" fluid size="large" type="submit">
+                Create Account
+              </Button>
+            </Segment>
+          </Form>
+          <br></br>
+          <div className="mt-3">
+            <p className="mb-0 text-center">
+              Already have an account? <Link to="/signin">Sign In</Link>
+            </p>
+          </div>
+        </Grid.Column>
+      </Grid>
     </div>
-
   );
 }
-
