@@ -26,7 +26,7 @@ function Layout() {
       case "/recent-trans":
         name = "Transactions";
         break;
-      case "/accounts":
+      case "/account":
         name = "Accounts";
         break;
       case "/analytics":
@@ -78,7 +78,7 @@ function Layout() {
             Transactions
           </Nav.Link>
           <Nav.Link
-            href="/accounts"
+            href="/account"
             active={currentPage === "Accounts"}
             className={`pb-3 text-center ${
               currentPage === "Accounts" ? "active-link" : ""
@@ -120,7 +120,6 @@ function Layout() {
             <FaCog />
             <br /> Settings
           </Nav.Link>
-         
         </Nav>
       </Navbar>
       <Navbar

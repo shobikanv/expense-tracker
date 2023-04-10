@@ -13,6 +13,7 @@ import IncomeForm from "./IncomeForm";
 import RecentTrans from "./RecentTrans";
 import SignIn from "./SignIn";
 import axios from "axios";
+import EIForm from "./EIForm";
 
 function IndexPage() {
   const [showExpenseForm, setShowExpenseForm] = useState(true);
@@ -74,40 +75,7 @@ function IndexPage() {
                 <Accordion.Header>NEW TRANSACTION</Accordion.Header>
                 <Accordion.Body>
                   <Row>
-                    <Col
-                      className="p-4 border hoverable "
-                      onClick={handleExpense}
-                     
-                    >
-                      <Link
-                        className="text-decoration-none "
-                        to="#"
-                        style={{
-                          color: showExpenseForm ? "red " : "black ",
-                        }}
-                      >
-                        Expense
-                      </Link>
-                    </Col>
-                    <Col
-                      className="p-4 border  hoverable"
-                      onClick={handleIncome}
-                    
-                    >
-                      <Link
-                        className="text-decoration-none "
-                        to="#"
-                        style={{
-                          color: showIncomeForm ? "green" : "black",
-                        }}
-                      >
-                        Income
-                      </Link>
-                    </Col>
-                  </Row>
-                  <Row>
-                    {showExpenseForm && <ExpenseForm />}
-                    {showIncomeForm && <IncomeForm />}
+                    <EIForm />
                   </Row>
                   <Row>
                     <br></br>

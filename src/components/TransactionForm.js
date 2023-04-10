@@ -4,7 +4,7 @@ import { Form, Button, Container } from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-export default function EIForm({ transaction }) {
+export default function TransactionForm() {
   const [formData, setFormData] = useState({
     date: "",
     account: "",
@@ -17,31 +17,10 @@ export default function EIForm({ transaction }) {
     amount_currency: "",
   });
 
-  useEffect(() => {
-    if (transaction) {
-      setFormData({
-        date: transaction?.date || "",
-        account: transaction?.account || "",
-        destination_account: transaction?.destination_account || "",
-        transaction_type: transaction?.transaction_type || "",
-        amount: transaction?.amount || "",
-        flag: transaction?.flag || false,
-        tags: transaction?.tags || [],
-        note: transaction?.note || "",
-        amount_currency: transaction?.amount_currency || "",
-      });
-    }
-  }, [transaction]);
-
-  console.log("FormData", formData);
-
   const [accounts, setAccounts] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
-  const [selectedTags, setSelectedTags] = useState(
-    transaction?.tags?.map((tag) => ({ value: tag.name, label: tag.name })) ||
-      []
-  );
+  const [selectedTags, setSelectedTags] = useState([]);
   const [currencies, setCurrencies] = useState([]);
 
   useEffect(() => {
@@ -124,7 +103,7 @@ export default function EIForm({ transaction }) {
       amount_currency: formData.amount_currency,
     };
 
-    console.log("DATATATATAT", data);
+    console.log(data);
     axios
       .post("http://127.0.0.1:8002/api/transactions/", data)
       .then(() => {
