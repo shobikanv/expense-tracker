@@ -7,13 +7,10 @@ import {
   Card,
   CardGroup,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import ExpenseForm from "./ExpenseForm";
-import IncomeForm from "./IncomeForm";
 import RecentTrans from "./RecentTrans";
 import SignIn from "./SignIn";
 import axios from "axios";
-import EIForm from "./EIForm";
+import TransactionForm from "./TransactionForm";
 
 function IndexPage() {
   const [showExpenseForm, setShowExpenseForm] = useState(true);
@@ -66,16 +63,20 @@ function IndexPage() {
     <>
       <Container>
         <Row>
-          <Col className="bg-secondary text-white d-flex justify-content-center align-items-center">
+          <Col
+            xs={6}
+            md={4}
+            className="bg-secondary text-white d-flex justify-content-center align-items-center"
+          >
             <h3>Net Worth: ${netWorth}</h3>
           </Col>
-          <Col>
+          <Col xs={12} md={8}>
             <Accordion defaultActiveKey={["0"]} alwaysOpen>
               <Accordion.Item eventKey="0">
                 <Accordion.Header>NEW TRANSACTION</Accordion.Header>
                 <Accordion.Body>
                   <Row>
-                    <EIForm />
+                    <TransactionForm />
                   </Row>
                   <Row>
                     <br></br>

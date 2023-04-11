@@ -3,8 +3,11 @@ import axios from "axios";
 import { Form, Button, Container } from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 export default function EIForm({ transaction }) {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const navigate=useNavigate
   const [formData, setFormData] = useState({
     date: "",
     account: "",
@@ -19,6 +22,7 @@ export default function EIForm({ transaction }) {
 
   useEffect(() => {
     if (transaction) {
+      setIsEditMode(true);
       setFormData({
         date: transaction?.date || "",
         account: transaction?.account || "",
@@ -66,6 +70,46 @@ export default function EIForm({ transaction }) {
     });
   }, []);
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      account: formData.account,
+      destination_account: formData.destination_account,
+      transaction_type: formData.transaction_type,
+      amount: formData.amount,
+      date: formData.date,
+      flag: formData.flag,
+      tags: selectedTags.map((tag) => ({ id: tag.id, name: tag.value })),
+      note: formData.note,
+      amount_currency: formData.amount_currency,
+    };
+
+    if (isEditMode) {
+      axios
+        .put(`http://127.0.0.1:8002/api/transactions/${transaction.id}/`, data)
+        .then(() => {
+          alert("Transaction updated successfully!");
+          navigate('/')
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          console.log(error);
+          alert("Error updating transaction");
+        });
+    } else {
+      axios
+        .post("http://127.0.0.1:8002/api/transactions/", data)
+        .then(() => {
+          alert("Transaction added successfully!");
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          console.log(error);
+          alert("Error adding transaction");
+        });
+    }
+  };
+
   const handleInputChange = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
@@ -110,32 +154,6 @@ export default function EIForm({ transaction }) {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = {
-      account: formData.account,
-      destination_account: formData.destination_account,
-      transaction_type: formData.transaction_type,
-      amount: formData.amount,
-      date: formData.date,
-      flag: formData.flag,
-      tags: selectedTags.map((tag) => ({ id: tag.id, name: tag.value })),
-      note: formData.note,
-      amount_currency: formData.amount_currency,
-    };
-
-    console.log("DATATATATAT", data);
-    axios
-      .post("http://127.0.0.1:8002/api/transactions/", data)
-      .then(() => {
-        alert("Transaction added successfully!");
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-        console.log(error);
-        alert("Error adding transaction");
-      });
-  };
   const handleAnchorClick = (event, type) => {
     event.preventDefault();
     setFormData({ ...formData, transaction_type: type });

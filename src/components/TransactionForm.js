@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Form, Button, Container } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Container,
+  Row,
+  Col,
+  Card,
+  InputGroup,
+  DropdownButton,
+  Dropdown,
+  FloatingLabel,
+} from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-export default function TransactionForm() {
+export default function TransactionForm({ transaction }) {
+  const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState({
     date: "",
     account: "",
@@ -17,10 +29,32 @@ export default function TransactionForm() {
     amount_currency: "",
   });
 
+  useEffect(() => {
+    if (transaction) {
+      setIsEditMode(true);
+      setFormData({
+        date: transaction?.date || "",
+        account: transaction?.account || "",
+        destination_account: transaction?.destination_account || "",
+        transaction_type: transaction?.transaction_type || "",
+        amount: transaction?.amount || "",
+        flag: transaction?.flag || false,
+        tags: transaction?.tags || [],
+        note: transaction?.note || "",
+        amount_currency: transaction?.amount_currency || "",
+      });
+    }
+  }, [transaction]);
+
+  console.log("FormData", formData);
+
   const [accounts, setAccounts] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(
+    transaction?.tags?.map((tag) => ({ value: tag.name, label: tag.name })) ||
+      []
+  );
   const [currencies, setCurrencies] = useState([]);
 
   useEffect(() => {
@@ -44,6 +78,45 @@ export default function TransactionForm() {
       );
     });
   }, []);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      account: formData.account,
+      destination_account: formData.destination_account,
+      transaction_type: formData.transaction_type,
+      amount: formData.amount,
+      date: formData.date,
+      flag: formData.flag,
+      tags: selectedTags.map((tag) => ({ id: tag.id, name: tag.value })),
+      note: formData.note,
+      amount_currency: formData.amount_currency,
+    };
+
+    if (isEditMode) {
+      axios
+        .put(`http://127.0.0.1:8002/api/transactions/${transaction.id}/`, data)
+        .then(() => {
+          alert("Transaction updated successfully!");
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          console.log(error);
+          alert("Error updating transaction");
+        });
+    } else {
+      axios
+        .post("http://127.0.0.1:8002/api/transactions/", data)
+        .then(() => {
+          alert("Transaction added successfully!");
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          console.log(error);
+          alert("Error adding transaction");
+        });
+    }
+  };
 
   const handleInputChange = (event) => {
     const target = event.target;
@@ -89,32 +162,6 @@ export default function TransactionForm() {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = {
-      account: formData.account,
-      destination_account: formData.destination_account,
-      transaction_type: formData.transaction_type,
-      amount: formData.amount,
-      date: formData.date,
-      flag: formData.flag,
-      tags: selectedTags.map((tag) => ({ id: tag.id, name: tag.value })),
-      note: formData.note,
-      amount_currency: formData.amount_currency,
-    };
-
-    console.log(data);
-    axios
-      .post("http://127.0.0.1:8002/api/transactions/", data)
-      .then(() => {
-        alert("Transaction added successfully!");
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-        console.log(error);
-        alert("Error adding transaction");
-      });
-  };
   const handleAnchorClick = (event, type) => {
     event.preventDefault();
     setFormData({ ...formData, transaction_type: type });
@@ -122,151 +169,191 @@ export default function TransactionForm() {
 
   return (
     <>
-      <Container className="shadow" style={{ margin: "1rem auto" }}>
-        <div className="mb-3 mt-md-4" style={{ position: "relative" }}>
-          <div className="mb-3" style={{ textAlign: "left" }}>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group controlId="transactionType">
-                <div className="ui top attached three item menu">
-                  <a
-                    href="#"
-                    className={`red item ${
-                      formData.transaction_type === "EXPENSE" ? "active" : ""
-                    }`}
-                    onClick={(e) => handleAnchorClick(e, "EXPENSE")}
-                  >
-                    Expense
-                  </a>
-                  <a
-                    href="#"
-                    className={`black item ${
-                      formData.transaction_type === "TRANSFER" ? "active" : ""
-                    }`}
-                    onClick={(e) => handleAnchorClick(e, "TRANSFER")}
-                  >
-                    Transfer
-                  </a>
-                  <a
-                    href="#"
-                    className={`green item ${
-                      formData.transaction_type === "INCOME" ? "active" : ""
-                    }`}
-                    onClick={(e) => handleAnchorClick(e, "INCOME")}
-                  >
-                    Income
-                  </a>
-                </div>
-              </Form.Group>
-              <Form.Group controlId="account">
-                <Form.Label>
-                  {formData.transaction_type === "EXPENSE"
-                    ? "From"
-                    : formData.transaction_type === "INCOME"
-                    ? "To"
-                    : "From"}
-                  :
-                </Form.Label>
-                <Form.Control
-                  as="select"
-                  name="account"
-                  onChange={handleInputChange}
-                  value={formData.account}
-                  required
-                >
-                  <option value="">Select an account</option>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name} - {account.group}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              {formData.transaction_type === "TRANSFER" && (
-                <Form.Group controlId="destination_account">
-                  <Form.Label>To :</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="destination_account"
-                    onChange={handleInputChange}
-                    value={formData.destination_account}
-                    required
-                  >
-                    <option value="">Select an account</option>
-                    {accounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name} - {account.group}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-              )}
+      <Container>
+        <Row>
+          <Col>
+            <Card className="shadow px-4">
+              <Card.Body>
+                <div className="mb-3 mt-md-4">
+                  <div className="mb-3">
+                    <Form className="row g-3" onSubmit={handleSubmit}>
+                      <Row>
+                        <Form.Group controlId="transactionType">
+                          <div className="ui top attached three item menu">
+                            <a
+                              href="#"
+                              className={`red item ${
+                                formData.transaction_type === "EXPENSE"
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={(e) => handleAnchorClick(e, "EXPENSE")}
+                            >
+                              Expense
+                            </a>
+                            <a
+                              href="#"
+                              className={`black item ${
+                                formData.transaction_type === "TRANSFER"
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={(e) => handleAnchorClick(e, "TRANSFER")}
+                            >
+                              Transfer
+                            </a>
+                            <a
+                              href="#"
+                              className={`green item ${
+                                formData.transaction_type === "INCOME"
+                                  ? "active"
+                                  : ""
+                              }`}
+                              onClick={(e) => handleAnchorClick(e, "INCOME")}
+                            >
+                              Income
+                            </a>
+                          </div>
+                        </Form.Group>
+                      </Row>
+                      <Col xs={12} md={8}>
+                        <Row className="mb-3">
+                          <Form.Group controlId="account">
+                            <Form.Label>
+                              {formData.transaction_type === "EXPENSE"
+                                ? "From"
+                                : formData.transaction_type === "INCOME"
+                                ? "To"
+                                : "From"}
+                              :
+                            </Form.Label>
+                            <Form.Control
+                              as="select"
+                              name="account"
+                              onChange={handleInputChange}
+                              value={formData.account}
+                              required
+                            >
+                              <option value="">Select an account</option>
+                              {accounts.map((account) => (
+                                <option key={account.id} value={account.id}>
+                                  {account.name} - {account.group}
+                                </option>
+                              ))}
+                            </Form.Control>
+                          </Form.Group>
+                          {formData.transaction_type === "TRANSFER" && (
+                            <Form.Group controlId="destination_account">
+                              <Form.Label>To :</Form.Label>
+                              <Form.Control
+                                as="select"
+                                name="destination_account"
+                                onChange={handleInputChange}
+                                value={formData.destination_account}
+                                required
+                              >
+                                <option value="">Select an account</option>
+                                {accounts.map((account) => (
+                                  <option key={account.id} value={account.id}>
+                                    {account.name} - {account.group}
+                                  </option>
+                                ))}
+                              </Form.Control>
+                            </Form.Group>
+                          )}
+                        </Row>
+                        <Row className="mb-3">
+                          {formData.transaction_type !== "TRANSFER" && (
+                            <Form.Group controlId="tags">
+                              <Form.Label>Tags:</Form.Label>
+                              <CreatableSelect
+                                isMulti
+                                options={tagOptions}
+                                onChange={handleTagChange}
+                                value={selectedTags}
+                              />
+                            </Form.Group>
+                          )}
+                        </Row>
+                        <Row>
+                          <Form.Group className=" mt-3" controlId="note">
+                            <FloatingLabel controlId="note" label="Note">
+                              <Form.Control
+                                as="textarea"
+                                name="note"
+                                onChange={handleInputChange}
+                                value={formData.note}
+                              />
+                            </FloatingLabel>
+                          </Form.Group>
+                        </Row>
+                      </Col>
+                      <Col xs={6} md={4} className="align-items-center">
+                        <Row className=" mb-5">
+                          <Form.Group controlId="amount">
+                            <Form.Label>Amount:</Form.Label>
+                            <InputGroup>
+                              <Form.Control
+                                type="number"
+                                name="amount"
+                                onChange={handleInputChange}
+                                value={formData.amount}
+                                required
+                              />
 
-              <Form.Group controlId="amount">
-                <Form.Label>Amount:</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="amount"
-                  onChange={handleInputChange}
-                  value={formData.amount}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="date">
-                <Form.Label>Date:</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="date"
-                  onChange={handleInputChange}
-                  value={formData.date}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="flag">
-                <Form.Check
-                  type="checkbox"
-                  name="flag"
-                  label="Flag"
-                  onChange={handleInputChange}
-                  checked={formData.flag}
-                />
-              </Form.Group>
-              {formData.transaction_type !== "TRANSFER" && (
-                <Form.Group controlId="tags">
-                  <Form.Label>Tags:</Form.Label>
-                  <CreatableSelect
-                    isMulti
-                    options={tagOptions}
-                    onChange={handleTagChange}
-                    value={selectedTags}
-                  />
-                </Form.Group>
-              )}
-              <Form.Group controlId="note">
-                <Form.Label>Note:</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="note"
-                  onChange={handleInputChange}
-                  value={formData.note}
-                />
-              </Form.Group>
-              <Form.Group controlId="currency">
-                <Form.Label>Currency:</Form.Label>
-                <CreatableSelect
-                  options={currencies}
-                  onChange={handleCurrencyChange}
-                  value={{
-                    value: formData.amount_currency,
-                    label: formData.amount_currency,
-                  }}
-                />
-              </Form.Group>
-              <div className="text-center mt-4">
-                <Button type="submit">Submit</Button>
-              </div>
-            </Form>
-          </div>
-        </div>
+                              <DropdownButton
+                                as={InputGroup.Append}
+                                variant="outline-secondary"
+                                title={formData.amount_currency || "INR"}
+                                className="w-25 px-0"
+                              >
+                                {currencies.map((currency) => (
+                                  <Dropdown.Item
+                                    key={currency.value}
+                                    onSelect={(e) =>
+                                      handleCurrencyChange({ value: e })
+                                    }
+                                  >
+                                    {currency.label}
+                                  </Dropdown.Item>
+                                ))}
+                              </DropdownButton>
+                            </InputGroup>
+                          </Form.Group>
+                        </Row>
+                        <Row className="mb-5">
+                          <Form.Group controlId="date">
+                            <Form.Control
+                              type="date"
+                              name="date"
+                              onChange={handleInputChange}
+                              value={formData.date}
+                              required
+                            />
+                          </Form.Group>
+                        </Row>
+                        <Row className="mb-3">
+                          <Button type="submit">
+                            {isEditMode ? "Save" : "Create"}
+                          </Button>
+                        </Row>
+                      </Col>
+                      <Form.Group controlId="flag">
+                        <Form.Check
+                          type="checkbox"
+                          name="flag"
+                          label="Flag"
+                          onChange={handleInputChange}
+                          checked={formData.flag}
+                        />
+                      </Form.Group>
+                    </Form>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       </Container>
     </>
   );

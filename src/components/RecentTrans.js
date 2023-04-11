@@ -138,8 +138,9 @@ export default function RecentTrans() {
                   className={
                     transaction.type === "INCOME"
                       ? "mono positive"
-                      :transaction.type === "EXPENSE" 
-                      ? "mono negative":"mono"
+                      : transaction.type === "EXPENSE"
+                      ? "mono negative"
+                      : "mono"
                   }
                 >
                   {transaction.amount} {transaction.currency}
@@ -152,18 +153,18 @@ export default function RecentTrans() {
                 >
                   <FaPen color="grey" />
                 </Button>
-                {selectedTransaction && (
-                  <EditTransactionModal
-                    show={showModal}
-                    transaction={selectedTransaction}
-                    onHide={() => setShowModal(false)}
-                  />
-                )}
               </div>
             </div>
           ))
         )}
       </div>
+      {selectedTransaction && showModal && (
+        <EditTransactionModal
+          show={showModal}
+          transaction={selectedTransaction}
+          onHide={() => setShowModal(false)}
+        />
+      )}
     </Container>
   );
 }
