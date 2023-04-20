@@ -8,7 +8,7 @@ import NetWorthChart from "./Charts/NetWorthChart";
 import TestChart from "./Charts/TestChart";
 
 function TransactionAnalytics() {
-  const [chartType, setChartType] = useState("TestChart");
+  const [chartType, setChartType] = useState("expenses_income");
   const [selectedOption, setSelectedOption] = useState("Monthly");
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
@@ -120,7 +120,6 @@ function TransactionAnalytics() {
           </Button>
         </div>
       </Container>
-      {chartType === "TestChart" && <TestChart />}
       {chartType === "expenses_income" && (
         <>
           {selectedOption === "Monthly" && (
