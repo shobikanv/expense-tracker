@@ -1,0 +1,4 @@
+.input-groups-row {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,0 +1,45 @@
+.transaction-item {
+  flex: 1 1 100%!important;
+  width: 100%;
+  border-bottom: 1px dotted #d4d4d5;
+  padding: .75em 1em;
+  
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+.badge {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: initial;
+  margin: 0 .14285714em;
+  background-color: #e8e8e8;
+  background-image: none;
+  padding: .5833em .833em;
+  color: rgba(0,0,0,.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: .28571429rem;
+}
+.transaction-item__date {
+  white-space: nowrap;
+  color: #7c7c7d;
+}
+
+.transaction-item__info {
+  flex-basis: 100%;
+  padding-left: .5em;
+}
+
+.transaction-item__amount {
+  flex: ;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.transaction-item__edit {
+  flex: 0 1;
+  white-space: nowrap;
+  text-align: right;
+}
