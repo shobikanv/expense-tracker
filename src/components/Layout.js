@@ -29,15 +29,17 @@ function Layout() {
       case "/account":
         name = "Accounts";
         break;
-      case "/analytics":
+      case "/charts":
         name = "Reports";
         break;
       case "/budget":
         name = "Budget";
         break;
+      
       case "/settings":
-        name = "Settings";
+        name="Settings";
         break;
+
       default:
         name = "Dashboard";
     }
@@ -89,7 +91,7 @@ function Layout() {
             Accounts
           </Nav.Link>
           <Nav.Link
-            href="/analytics"
+            href="/charts"
             active={currentPage === "Reports"}
             className={`pb-3 text-center ${
               currentPage === "Reports" ? "active-link" : ""
@@ -118,7 +120,8 @@ function Layout() {
             }`}
           >
             <FaCog />
-            <br /> Settings
+            <br />
+            Settings
           </Nav.Link>
         </Nav>
       </Navbar>

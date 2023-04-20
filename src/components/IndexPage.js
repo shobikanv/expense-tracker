@@ -7,68 +7,35 @@ import {
   Card,
   CardGroup,
 } from "react-bootstrap";
-import RecentTrans from "./RecentTrans";
-import SignIn from "./SignIn";
+import RecentTrans from "./Transactions/RecentTrans";
 import axios from "axios";
-import TransactionForm from "./TransactionForm";
+import TransactionForm from "./Transactions/TransactionForm";
+import AccountsList from "./Accounts/AccountList"
 
 function IndexPage() {
-  const [showExpenseForm, setShowExpenseForm] = useState(true);
-  const [showIncomeForm, setShowIncomeForm] = useState(false);
-  const [netWorth, setNetWorth] = useState(0);
-
-  const handleExpense = () => {
-    setShowExpenseForm(true);
-    setShowIncomeForm(false);
-  };
-
-  const handleIncome = () => {
-    setShowIncomeForm(true);
-    setShowExpenseForm(false);
-  };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3003/expenses")
-      .then((response) => {
-        const expenses = response.data.map((expense) => ({
-          ...expense,
-          type: "expense",
-        }));
-        const totalExpenses = expenses.reduce(
-          (acc, curr) => acc + parseInt(curr.amount),
-          0
-        );
-
-        axios
-          .get("http://localhost:3003/income")
-          .then((response) => {
-            const income = response.data.map((income) => ({
-              ...income,
-              type: "income",
-            }));
-            const totalIncome = income.reduce(
-              (acc, curr) => acc + parseInt(curr.amount),
-              0
-            );
-            const netWorth = totalIncome - totalExpenses;
-            setNetWorth(netWorth);
-          })
-          .catch((error) => console.log(error));
-      })
-      .catch((error) => console.log(error));
-  });
 
   return (
     <>
+      <br />
       <Container>
         <Row>
-          <Col
-            xs={6}
-            md={4}
-            className="bg-secondary text-white d-flex justify-content-center align-items-center"
-          >
-            <h3>Net Worth: ${netWorth}</h3>
+          <Col>
+            <Accordion
+              style={{ border: "none" }}
+              defaultActiveKey={["0"]}
+              alwaysOpen
+            >
+              <Accordion.Item style={{ border: "none" }} eventKey="0">
+                <Accordion.Header style={{ paddingBottom: "10px", border:"none" }}>
+                  Net Worth
+                </Accordion.Header>
+                <Accordion.Body style={{ border: "none" }}>
+                  <Row>
+                    <AccountsList showEdit={false} />
+                  </Row>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
           </Col>
           <Col xs={12} md={8}>
             <Accordion defaultActiveKey={["0"]} alwaysOpen>
@@ -88,7 +55,7 @@ function IndexPage() {
                 <Accordion.Header> RECENT TRANSACTIONS </Accordion.Header>
                 <Accordion.Body>
                   <Row>
-                    <RecentTrans />
+                    <RecentTrans showFilterForm={false} showEdit={false}/>
                   </Row>
                 </Accordion.Body>
               </Accordion.Item>
