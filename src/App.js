@@ -1,21 +1,22 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ForgetPassword from "./components/ForgetPassword";
-import Analytics from "./components/Analytics";
+import ForgetPassword from "./components/Unwanted/ForgetPassword";
+import Analytics from "./components/Unwanted/Analytics";
 import Layout from "./components/Layout";
 import NoPage from "./components/NoPage";
-import Registration from "./components/Registration";
-import SignIn from "./components/SignIn";
-import ExpenseForm from "./components/ExpenseForm";
-import IncomeForm from "./components/IncomeForm";
+import Registration from "./components/Unwanted/Registration";
+import SignIn from "./components/Unwanted/SignIn";
+import ExpenseForm from "./components/Unwanted/ExpenseForm";
+import IncomeForm from "./components/Unwanted/IncomeForm";
 import IndexPage from "./components/IndexPage";
 import "./components/App.css";
-import RecentTrans from "./components/RecentTrans";
-import TransactionForm from "./components/TransactionForm";
-import EIForm from "./components/EIForm";
-import AccountForm from "./components/AccountSetup";
-import TransactionFilterForm from "./components/TransactionFilterForm";
-
+import RecentTrans from "./components/Transactions/RecentTrans";
+import TransactionForm from "./components/Transactions/TransactionForm";
+import EIForm from "./components/Unwanted/EIForm";
+import AccountForm from "./components/Accounts/AccountSetup";
+import TransactionFilterForm from "./components/Transactions/TransactionFilterForm";
+import TransactionAnalytics from "./components/Reports";
+import MyComponenet from "./components/Unwanted/FilteringDate"
 function App() {
   return (
     <BrowserRouter>
@@ -33,9 +34,10 @@ function App() {
           <Route path="account" element={<AccountForm />} />
           <Route path="transactions" element={<TransactionForm />} />
           <Route path="recent-trans" element={<RecentTrans />} />
-
+          <Route path="charts" element={<TransactionAnalytics/>}/>
           <Route path="filter-trans" element={<TransactionFilterForm />} />
-          <Route path="*" element={<NoPage />} />
+
+          <Route path="*" element={<MyComponenet />} />
         </Route>
       </Routes>
     </BrowserRouter>
