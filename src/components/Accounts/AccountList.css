@@ -1,0 +1,98 @@
+.accordion-button{
+  background-color:rgba(77,78,80,.05)
+}
+.accordion-button::before {
+  display: none !important;
+}
+.accordion-button::after {
+  display: none !important;
+}
+.accordion-body {
+  padding: 0;
+}
+.accordion-button:not(.collapsed) {
+  background-color: white
+}
+.accordion-button:focus,
+.accordion-button:active {
+  outline: none;
+  border-color: none;
+  box-shadow: none;
+  color:black;
+}
+.collapse .accordion-collapse:focus,
+.collapse .accordion-collapse:active {
+  outline: none;
+}
+
+.account-widget-account__name {
+  padding: 0.5em 0.5em 0.5em 1em;
+}
+.account-widget-group__header {
+  display: table;
+  width: 100%;
+  cursor: pointer;
+}
+.account-widget-group__total {
+  width: 1px;
+  white-space: nowrap;
+  display: table-cell;
+  font-weight: 500;
+  padding: 0.5em 1em;
+}
+.account-widget {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-widget__left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.account-widget__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.account-widget-group__name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.account-widget-account__name {
+  font-size: 16px;
+  font-weight: normal;
+  color: #888888;
+}
+
+.account-widget-account__balance {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.account-widget-account__balance.positive {
+  color: green;
+}
+
+.account-widget-account__balance.negative {
+  color: red;
+}
+
+.account-widget-account__edit {
+  margin-left: 10px;
+}
+.list-group-item{
+  border-bottom:1px solid rgba(0,0,0,.125);
+  border-top: 0;
+  border-left: 0;
+  border-top: 0;
+}
+.accordion-button:not(.collapsed) {
+    color: #000000;}
