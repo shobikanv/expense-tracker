@@ -14,6 +14,10 @@ import {
 } from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 export default function TransactionForm({ transaction, onClose }) {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -102,7 +106,8 @@ export default function TransactionForm({ transaction, onClose }) {
       axios
         .put(`http://127.0.0.1:8002/api/transactions/${transaction.id}/`, data)
         .then(() => {
-          alert("Transaction updated successfully!");
+          toast.success("Transaction updated successfully!");
+          onClose()
         })
         .catch((error) => {
           console.log(error.response.data);
@@ -116,8 +121,8 @@ export default function TransactionForm({ transaction, onClose }) {
           data
         )
         .then(() => {
+          alert.success("Transaction deleted successfully!")
           onClose();
-          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
@@ -127,7 +132,8 @@ export default function TransactionForm({ transaction, onClose }) {
       axios
         .post("http://127.0.0.1:8002/api/transactions/", data)
         .then(() => {
-          alert("Transaction added successfully!");
+          toast.success("Transaction added successfully!");
+          onClose()
         })
         .catch((error) => {
           console.log(error.response.data);
@@ -188,6 +194,7 @@ export default function TransactionForm({ transaction, onClose }) {
 
   return (
     <>
+      <ToastContainer />
       <Container>
         <Row>
           <Col>

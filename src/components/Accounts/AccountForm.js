@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Container, Card } from "react-bootstrap";
 import axios from "axios";
-import AccountList from "./AccountList";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AccountForm({ account, onClose }) {
   const [name, setName] = useState("");
@@ -13,7 +14,6 @@ function AccountForm({ account, onClose }) {
 
   const handleDelete = () => {
     setDeleteAccount(true);
-    console.log("inside handle delete ");
   };
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function AccountForm({ account, onClose }) {
         .put(`http://127.0.0.1:8002/api/accounts/${account.id}/`, data)
         .then(() => {
           onClose();
-          window.location.reload();
+          toast.success("Account updated successfully!");
         })
         .catch((error) => {
           console.log(error);
@@ -48,7 +48,6 @@ function AccountForm({ account, onClose }) {
         .delete(`http://127.0.0.1:8002/api/accounts/${account.id}/`, data)
         .then(() => {
           onClose();
-          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
@@ -66,7 +65,6 @@ function AccountForm({ account, onClose }) {
             [response.data.id]: response.data,
           }));
           console.log(response);
-          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
@@ -76,6 +74,7 @@ function AccountForm({ account, onClose }) {
 
   return (
     <>
+    <ToastContainer />
       <Container>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="name">

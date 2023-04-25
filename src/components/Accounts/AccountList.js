@@ -5,7 +5,7 @@ import axios from "axios";
 import "./AccountList.css";
 import EditAccountModal from "./EditAccounts";
 
-export default function AccountList({ showEdit =true}) {
+export default function AccountList({ showEdit = true }) {
   const [accounts, setAccounts] = useState({});
   const [activeKeys, setActiveKeys] = useState(["CASH"]);
 
@@ -33,7 +33,7 @@ export default function AccountList({ showEdit =true}) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [accounts]);
 
   const renderAccounts = (group) => {
     return (

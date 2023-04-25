@@ -16,7 +16,10 @@ import EIForm from "./components/Unwanted/EIForm";
 import AccountForm from "./components/Accounts/AccountSetup";
 import TransactionFilterForm from "./components/Transactions/TransactionFilterForm";
 import TransactionAnalytics from "./components/Reports";
-import MyComponenet from "./components/Unwanted/FilteringDate"
+import MyComponenet from "./components/Unwanted/FilteringDate";
+import CurrencyExchange from "./components/Settings/CurrencyExchange";
+import Settings from "./components/Settings/Settings";
+
 function App() {
   return (
     <BrowserRouter>
@@ -34,8 +37,9 @@ function App() {
           <Route path="account" element={<AccountForm />} />
           <Route path="transactions" element={<TransactionForm />} />
           <Route path="recent-trans" element={<RecentTrans />} />
-          <Route path="charts" element={<TransactionAnalytics/>}/>
+          <Route path="charts" element={<TransactionAnalytics />} />
           <Route path="filter-trans" element={<TransactionFilterForm />} />
+          <Route path="settings" element={<Settings />} />
 
           <Route path="*" element={<MyComponenet />} />
         </Route>
