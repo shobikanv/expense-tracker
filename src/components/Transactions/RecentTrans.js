@@ -95,7 +95,9 @@ export default function RecentTrans({
     <Container fluid className="recent-trans-container">
       {showFilterForm && (
         <TransactionFilterForm onSubmit={handleFilterSubmit} />
-      )}
+      )}{transactions.length === 0 ? (
+        <h2>"No transactions are made"</h2>
+      ) : (
       <div className="transactions-list__wrapper">
         {loading ? (
           <div className="dimmer">
@@ -171,7 +173,7 @@ export default function RecentTrans({
             </div>
           ))
         )}
-      </div>
+      </div>)}
       {selectedTransaction && showModal && (
         <EditTransactionModal
           show={showModal}

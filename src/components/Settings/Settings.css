@@ -1,0 +1,12 @@
+.settings-container,
+.settings-accordion {
+  border: none;
+}
+
+.settings-accordion .accordion-button {
+  border: none;
+  border-radius: 0;
+}
+.accordion-item {
+    border:none
+}

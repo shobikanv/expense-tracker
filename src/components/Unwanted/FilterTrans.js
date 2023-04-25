@@ -1,12 +1,29 @@
 import React, { useState } from "react";
 import { Form, Col, Row, Button } from "react-bootstrap";
 
-
 export default function FilterTrans({ onFilterChange }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [transactionType, setTransactionType] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState("");
+  const [accounts, setAccounts] = useState([]);
+
+  useEffect(() => {
+    axios.get("api/accounts").then((response) => {
+      setAccounts(response.data);
+    });
+  }, []);
+  useEffect(() => {
+    const filterParams = {
+      startDate: startDate,
+      endDate: endDate,
+      transactionType: transactionType,
+      selectedTags: selectedTags,
+      selectedAccount: selectedAccount,
+    };
+    onFilterChange(filterParams);
+  }, [startDate, endDate, transactionType, selectedTags, selectedAccount]);
 
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
@@ -19,13 +36,16 @@ export default function FilterTrans({ onFilterChange }) {
   const handleTransactionTypeChange = (event) => {
     setTransactionType(event.target.value);
   };
-
+  const handleAccountChange = (event) => {
+    setSelectedAccount(event.target.value);
+  };
   const handleFilterClick = () => {
     const filterParams = {
       startDate: startDate,
       endDate: endDate,
       transactionType: transactionType,
       selectedTags: selectedTags,
+      selectedAccount: selectedAccount,
     };
     onFilterChange(filterParams);
     console.log(filterParams);
@@ -40,12 +60,7 @@ export default function FilterTrans({ onFilterChange }) {
 
   return (
     <>
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleFilterClick();
-        }}
-      >
+      <Form>
         <Row>
           <Col>
             <Form.Group controlId="startDate">
@@ -80,24 +95,21 @@ export default function FilterTrans({ onFilterChange }) {
               </Form.Select>
             </Form.Group>
           </Col>
-
-          <Col className="d-flex align-items-end ">
-            <div className="mt-auto">
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={handleFilterClick}
+          <Col>
+            <Form.Group controlId="selectedAccount">
+              <Form.Label>Account</Form.Label>
+              <Form.Select
+                value={selectedAccount}
+                onChange={handleAccountChange}
               >
-                Filter
-              </Button>
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={handleClearClick}
-              >
-                Clear
-              </Button>
-            </div>
+                <option value="">All</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.name}>
+                    {account.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
           </Col>
         </Row>
       </Form>

@@ -46,7 +46,7 @@ function ExpenseIncomeChart({ year, month, type }) {
     },
     yaxis: {
       min: 0,
-      max: 50000,
+      max: 5000,
       tickAmount: 10,
       labels: {
         formatter: function (val) {
